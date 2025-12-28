@@ -37,7 +37,7 @@ class Command(BaseCommand):
             reviewed_users = random.sample(users, min(num_reviews, len(users)))
             
             for user in reviewed_users:
-                rating = random.choices(
+                rating=random.choices(
                     [1, 2, 3, 4, 5],
                     weights=[5, 10, 20, 30, 35]
                 )[0]

@@ -14,7 +14,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
         )    
         return user
     
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(serializers.Serializer):
     phone_number=serializers.CharField()  
 
 class ReviewSerializer(serializers.ModelSerializer):
@@ -23,7 +23,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         model=Review
         fields=['id','user_name','rating','text','created_at']
 
-class AddReviewSerializer(serializers.ModelSerializer):
+class AddReviewSerializer(serializers.Serializer):
     place_name=serializers.CharField(max_length=255)
     place_address=serializers.CharField()
     rating=serializers.IntegerField(min_value=1,max_value=5)

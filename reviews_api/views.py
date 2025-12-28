@@ -3,7 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny,IsAuthenticated
 from rest_framework.authtoken.models import Token
-from django.db.models import Q,Avg,Case,When,IntegerField
+from django.db.models import Q,Avg,Case,When,IntegerField,Value
+from django.db.models.functions import Round,Coalesce
 from .models import User,Place,Review
 from .serializers import (RegistrationSerializer,LoginSerializer,AddReviewSerializer,PlaceDetailSerialzer,PlaceSearchSerialzer,ReviewSerializer)
 
@@ -81,7 +82,7 @@ class PlaceSearchView(generics.ListAPIView):
 
     def get_queryset(self):
         queryset=Place.objects.annotate(
-            average_rating=Avg('reviews__rating'))
+            average_rating=Coalesce(Round(Avg('reviews__rating'), 2), Value(0.0)))
         name=self.request.query_params.get('name',None)
         min_rating=self.request.query_params.get('min_rating',None)
         if min_rating:
@@ -99,7 +100,7 @@ class PlaceSearchView(generics.ListAPIView):
             ).order_by('match_priority','name') 
         else:
             queryset=queryset.order_by('name')
-            return queryset
+        return queryset
 class PlaceDetailView(generics.RetrieveAPIView):
     queryset=Place.objects.all()
     permission_classes=[IsAuthenticated]

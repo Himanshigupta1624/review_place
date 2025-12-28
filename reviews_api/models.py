@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 from django.core.validators import MinValueValidator,MaxValueValidator
 from django.db.models.functions import Lower
 class UserManager(BaseUserManager):
@@ -8,21 +8,23 @@ class UserManager(BaseUserManager):
             raise ValueError('phone number is must')
         user=self.model(phone_number=phone_number,name=name)
         user.set_password(password)
+        user.is_active=True
         user.save()
         return user
     def create_superuser(self,name,phone_number,password):
         user=self.create_user(name=name,phone_number=phone_number,password=password)
         user.is_staff=True
         user.is_superuser=True
+        user.is_active=True
         user.save()
         return user
     
-class User(AbstractBaseUser):
+class User(AbstractBaseUser,PermissionsMixin):
     name=models.CharField(max_length=100)
     phone_number=models.CharField(max_length=12,unique=True,db_index=True)
     created_by=models.DateTimeField(auto_now_add=True)
     is_staff=models.BooleanField(default=False)
-    is_active=models.BooleanField(default=False)
+    is_active=models.BooleanField(default=True)
 
 
     USERNAME_FIELD = "phone_number"
